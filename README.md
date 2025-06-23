@@ -28,4 +28,32 @@ Un script Python interactif pour collecter, afficher et enregistrer les informat
 
 1. **Lancer le script** (double-clic ou terminal) :
    ```bash
-   python windows_info.py
+   @echo off.bat
+
+## 📂 Emplacement du fichier de rapport
+
+Le fichier `rapport_pc.txt` sera créé automatiquement **lors de la première sauvegarde d’un PC** effectuée avec le script.
+
+### Chemin par défaut :
+```bash
+ ...\InfoMaterielCollect\windows_info\rapport_pc.txt
+```
+---
+## 📋 Informations collectées par le script
+
+| N° | Champ                          | Description                                                                 |
+|----|--------------------------------|-----------------------------------------------------------------------------|
+| 1  | **Nom**                        | Nom de la personne utilisant l’ordinateur (saisi manuellement)             |
+| 2  | **Nom de l’appareil**          | Nom du PC sur le réseau (hostname)                                         |
+| 3  | **Détails / Info**             | Info personnalisée (ex : service, salle, usage…)                           |
+| 4  | **Marque du PC**               | Constructeur (ex : Dell, HP, Lenovo…)                                      |
+| 5  | **Modèle / Référence**         | Modèle exact de l’ordinateur                                               |
+| 6  | **Numéro de série**            | Numéro de série unique du matériel                                         |
+| 7  | **Mise en service**            | Date d’installation initiale de Windows                                    |
+| 8  | **RAM (Go)**                   | Quantité de mémoire vive installée (en Go)                                 |
+| 9  | **Stockage**                   | Capacité du disque principal                                               |
+| 10 | **Processeur**                 | Modèle du processeur (ex : Intel Core i5…)                                 |
+| 11 | **Windows**                    | Version et édition de Windows installée (ex : Windows 10 Pro 22H2)         |
+| 12 | **Compatible Windows 11 ?**    | Oui / Non + détails (ex : TPM, Secure Boot, CPU…)                          |
+| 13 | **Date de test**              | Date à laquelle l’analyse a été effectuée                                  |
+
