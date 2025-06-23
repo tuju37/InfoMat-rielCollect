@@ -4,6 +4,7 @@ Un script Python interactif pour collecter, afficher et enregistrer les informat
 
 ---
 ## Transférable sur clé USB
+Attention à la fiabilité de la compatibilité Windows 11.
 ---
 ## 📦 Fonctionnalités
 
