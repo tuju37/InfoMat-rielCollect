@@ -17,15 +17,6 @@ except Exception:
 RAPPORT_FILENAME = "rapport_pc.txt"
 _report_lock = threading.Lock()
 
-CPU_OK_KEYWORDS = [
-    "intel core i3-8", "intel core i5-8", "intel core i7-8", "intel core i9-8",
-    "intel core i3-9", "intel core i5-9", "intel core i7-9", "intel core i9-9",
-    "intel core i3-10", "intel core i5-10", "intel core i7-10", "intel core i9-10",
-    "intel core i3-11", "intel core i5-11", "intel core i7-11", "intel core i9-11",
-    "amd ryzen 3", "amd ryzen 5", "amd ryzen 7", "amd ryzen 9", "amd ryzen 5 pro", "amd ryzen 7 pro", "amd ryzen 9 pro",
-    "amd ryzen threadripper", "amd ryzen 7 3700x", "amd ryzen 5 3600", "amd ryzen 5 5600x", "amd ryzen 7 5800x"
-]
-
 def log_error(msg):
     print(f"[ERREUR] {msg}", file=sys.stderr)
 
@@ -148,16 +139,26 @@ def get_tpm_version():
 def is_cpu_compatible():
     try:
         cpu_name = get_wmic_value('cpu', 'Name').lower()
-        return any(kw in cpu_name for kw in CPU_OK_KEYWORDS)
+        cpu_ok_keywords = [
+            "intel core i3-8", "intel core i5-8", "intel core i7-8", "intel core i9-8",
+            "intel core i3-9", "intel core i5-9", "intel core i7-9", "intel core i9-9",
+            "intel core i3-10", "intel core i5-10", "intel core i7-10", "intel core i9-10",
+            "intel core i3-11", "intel core i5-11", "intel core i7-11", "intel core i9-11",
+            "amd ryzen 3", "amd ryzen 5", "amd ryzen 7", "amd ryzen 9", "amd ryzen 5 pro", "amd ryzen 7 pro", "amd ryzen 9 pro",
+            "amd ryzen threadripper", "amd ryzen 7 3700x", "amd ryzen 5 3600", "amd ryzen 5 5600x", "amd ryzen 7 5800x"
+        ]
+        return any(kw in cpu_name for kw in cpu_ok_keywords)
     except Exception:
         return False
 
 def check_windows11_compatibility():
     """Vérifie la compatibilité avec Windows 11 en effectuant des recherches approfondies pour chaque composant."""
     try:
+        # Vérification de la RAM
         ram = get_ram_gb()
         ram_ok = int(ram) >= 4 if ram and ram.isdigit() else False
 
+        # Vérification du CPU (nombre de cœurs et compatibilité)
         cpu_ok = False
         try:
             cores = int(get_wmic_value('cpu', 'NumberOfCores'))
@@ -166,11 +167,20 @@ def check_windows11_compatibility():
             pass
 
         cpu_name = get_wmic_value('cpu', 'Name').lower()
-        cpu_compatible = any(keyword in cpu_name for keyword in CPU_OK_KEYWORDS)
+        cpu_compatible = any(keyword in cpu_name for keyword in [
+            "intel core i3-8", "intel core i5-8", "intel core i7-8", "intel core i9-8",
+            "intel core i3-9", "intel core i5-9", "intel core i7-9", "intel core i9-9",
+            "intel core i3-10", "intel core i5-10", "intel core i7-10", "intel core i9-10",
+            "intel core i3-11", "intel core i5-11", "intel core i7-11", "intel core i9-11",
+            "amd ryzen 3", "amd ryzen 5", "amd ryzen 7", "amd ryzen 9", "amd ryzen 5 pro", "amd ryzen 7 pro", "amd ryzen 9 pro",
+            "amd ryzen threadripper", "amd ryzen 7 3700x", "amd ryzen 5 3600", "amd ryzen 5 5600x", "amd ryzen 7 5800x"
+        ])
 
+        # Vérification de l'architecture CPU
         arch = platform.machine()
         cpu_arch_ok = arch in ("AMD64", "x86_64", "ARM64")
 
+        # Vérification du stockage
         storage_ok = False
         try:
             storage_gb = int(get_storage().split()[0])
@@ -178,11 +188,14 @@ def check_windows11_compatibility():
         except Exception:
             pass
 
+        # Vérification du TPM (Trusted Platform Module)
         tpm_version = get_tpm_version()
         tpm_ok = tpm_version.startswith("2")
 
+        # Vérification du Secure Boot
         secure_boot_ok = get_wmic_value('computersystem', 'SecureBootState') == "1"
 
+        # Résumé de la compatibilité
         return {
             "RAM >= 4Go": ram_ok,
             "CPU >= 2 cœurs": cpu_ok,
@@ -199,23 +212,19 @@ def check_windows11_compatibility():
         return {}
 
 def afficher_details_compatibilite(compat):
-    """Affiche le détail de la compatibilité Windows 11 de façon claire."""
+    """Affiche le détail de la compatibilité Windows 11 de façon claire et concise."""
     try:
         print("\nDétail compatibilité Windows 11 :")
         for k, v in compat.items():
             if k == "Compatible Windows 11":
                 continue
-            if k == "TPM version":
-                print(f"  {k:<25}: {v}")
-                continue
             msg = "OK" if v else "NON"
-            if not v:
-                if k == "TPM 2.0":
-                    msg += " (TPM absent ou version < 2.0)"
-                elif k == "Processeur compatible":
-                    msg += " (Processeur non listé compatible Windows 11)"
-                elif k == "Secure Boot":
-                    msg += " (Peut être activé dans le BIOS/UEFI si supporté)"
+            if k == "TPM 2.0" and not v:
+                msg += " (TPM absent ou version < 2.0)"
+            elif k == "Processeur compatible" and not v:
+                msg += " (Processeur non listé compatible Windows 11)"
+            elif k == "Secure Boot" and not v:
+                msg += " (Peut être activé dans le BIOS/UEFI si supporté)"
             print(f"  {k:<25}: {msg}")
         print(f"\nRésultat global : {'OUI' if compat['Compatible Windows 11'] else 'NON'}")
     except Exception as e:
@@ -226,17 +235,43 @@ def choisir_service():
     services = [
         "Autres"
     ]
-    print("\nSélectionnez le détail/info correspondant à ce poste :")
+    print("\nSélectionnez le service correspondant à ce poste :")
     for i, s in enumerate(services, 1):
         print(f"{i}. {s}")
     while True:
-        choix = safe_input("Numéro du détail/info : ").strip()
+        choix = safe_input("Numéro du service : ").strip()
         if choix.isdigit() and 1 <= int(choix) <= len(services):
             if services[int(choix)-1] == "Autres":
-                autre = safe_input("Veuillez préciser le détail/info : ").strip()
+                autre = safe_input("Veuillez préciser le service : ").strip()
                 return autre if autre else "Autres"
             return services[int(choix)-1]
         print("Choix invalide, recommencez.")
+
+def afficher_details_compatibilite(compat):
+    """Affiche le détail de la compatibilité Windows 11 de façon claire."""
+    try:
+        print("\nDétail compatibilité Windows 11 :")
+        for k, v in compat.items():
+            if k == "Compatible Windows 11":
+                continue
+            if k == "TPM version":
+                print(f"  {k:<25}: {v}")
+                continue
+            if v:
+                msg = "OK"
+            else:
+                if k == "TPM 2.0":
+                    msg = "NON (TPM absent ou version < 2.0)"
+                elif k == "Processeur compatible":
+                    msg = "NON (Processeur non listé compatible Windows 11)"
+                elif k == "Secure Boot":
+                    msg = "NON (Peut être activé dans le BIOS/UEFI si supporté)"
+                else:
+                    msg = "NON"
+            print(f"  {k:<25}: {msg}")
+        print(f"\nRésultat global : {'OUI' if compat['Compatible Windows 11'] else 'NON'}")
+    except Exception as e:
+        log_error(f"Affichage compatibilité : {e}")
 
 def resume_rapide(infos, compat, details):
     """Affiche un résumé rapide des informations principales de façon claire."""
@@ -244,8 +279,8 @@ def resume_rapide(infos, compat, details):
         print("\n" + "="*60)
         print("Résumé rapide :")
         print(f"Utilisateur           : {infos['Nom']}")
-        print(f"Nom de l'appareil     : {infos[\"Nom de l'appareil\"]}")
-        print(f"Détails/Info          : {infos['Détails/Info']}")
+        print(f"Nom de l'appareil     : {infos['Nom de l\'appareil']}")
+        print(f"Service               : {infos['Service']}")
         print(f"Marque du PC          : {infos['Marque du PC']}")
         print(f"Modèle / Référence    : {infos['Modèle / Référence']}")
         print(f"Numéro de série       : {infos['Numéro de série']}")
@@ -295,6 +330,7 @@ def main():
             print("           Informations sur ce PC Windows")
             print("="*60)
 
+            # Demande le nom de l'utilisateur
             utilisateur = safe_input("Entrez le nom de la personne qui utilise cet ordinateur : ").strip()
 
             try:
@@ -321,9 +357,9 @@ def main():
             print(f"Nom de l'appareil : {hostname}")
             service_choisi = choisir_service()
             infos = {
-                "Nom": utilisateur,
+                "Nom": utilisateur,  # Utilise le nom saisi par l'utilisateur
                 "Nom de l'appareil": hostname,
-                "Détails/Info": service_choisi,
+                "Service": service_choisi,
                 "Marque du PC": get_wmic_value('computersystem', 'Manufacturer'),
                 "Modèle / Référence": get_wmic_value('computersystem', 'Model'),
                 "Numéro de série": get_wmic_value('bios', 'SerialNumber'),
@@ -350,7 +386,7 @@ def main():
             resume_rapide(infos, compat, details)
             print("\nRésumé du rapport :")
             for k in [
-                "Nom", "Nom de l'appareil", "Détails/Info", "Marque du PC", "Modèle / Référence", "Numéro de série",
+                "Nom", "Nom de l'appareil", "Service", "Marque du PC", "Modèle / Référence", "Numéro de série",
                 "Mise en service", "RAM (Go)", "Stockage", "Processeur", "Windows", "Compatible Windows 11 ?"
             ]:
                 print(f"{k:<25}: {infos.get(k, '')}{details if k == 'Compatible Windows 11 ?' else ''}")
@@ -358,7 +394,7 @@ def main():
             print("="*60)
             txt_path = os.path.join(get_windows_info_dir(), RAPPORT_FILENAME)
             colonnes = [
-                "N°", "Nom", "Nom de l'appareil", "Détails/Info", "Marque du PC", "Modèle / Référence", "Numéro de série",
+                "N°", "Nom", "Nom de l'appareil", "Service", "Marque du PC", "Modèle / Référence", "Numéro de série",
                 "Mise en service", "RAM (Go)", "Stockage", "Processeur", "Windows", "Compatible Windows 11 ?", "Date de test"
             ]
             deja_present = False
@@ -383,10 +419,10 @@ def main():
                     if ligne.strip() and not ligne.startswith("#") and not ligne.startswith("-"):
                         numero += 1
                 valeurs = [
-                    str(numero),
+                    str(numero),  # Ajoute le numéro de l'ordinateur
                     infos.get("Nom", ""),
                     infos.get("Nom de l'appareil", ""),
-                    infos.get("Détails/Info", ""),
+                    infos.get("Service", ""),
                     infos.get("Marque du PC", ""),
                     infos.get("Modèle / Référence", ""),
                     infos.get("Numéro de série", ""),
@@ -419,8 +455,5 @@ def main():
 
 if __name__ == "__main__":
     elevate_if_needed()
-    try:
-        main()
-    except Exception as e:
-        log_error(f"Erreur inattendue au niveau principal : {e}")
+    main()
     safe_input("Appuyez sur Entrée pour fermer...")
