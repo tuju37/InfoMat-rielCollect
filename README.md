@@ -5,7 +5,7 @@ Un script Python interactif pour collecter, afficher et enregistrer les informat
 ---
 ## Transférable sur clé USB
 ---
-- Attention à la fiabilité de la compatibilité Windows 11.
+-⚠️ Attention à la fiabilité de la compatibilité Windows 11. ⚠️
 ---
 ## 📦 Fonctionnalités
 
@@ -17,7 +17,7 @@ Un script Python interactif pour collecter, afficher et enregistrer les informat
   - Date de mise en service de Windows
   - Processeur, RAM, stockage
   - Version de Windows
-  - Compatibilité Windows 11 (analyse détaillée)
+  - ⚠️ Compatibilité Windows 11 (analyse détaillée)
 - Résumé lisible à l’écran
 - Enregistrement optionnel dans `rapport_pc.txt` (avec gestion du doublon)
 - Boucle permettant l’analyse de plusieurs postes
@@ -56,6 +56,6 @@ Le fichier `rapport_pc.txt` sera créé automatiquement **lors de la première s
 | 8  | **RAM (Go)**                   | Quantité de mémoire vive installée (en Go)                                 |
 | 9  | **Stockage**                   | Capacité du disque principal                                               |
 | 10 | **Processeur**                 | Modèle du processeur (ex : Intel Core i5…)                                 |
-| 11 | **Compatible Windows 11 ?**    | Oui / Non + détails (ex : TPM, Secure Boot, CPU…)                          |
+| 11 | **⚠️Compatible Windows 11 ?**    | Oui / Non + détails (ex : TPM, Secure Boot, CPU…)                          |
 | 12 | **Date de test**              | Date à laquelle l’analyse a été effectuée                                  |
 
