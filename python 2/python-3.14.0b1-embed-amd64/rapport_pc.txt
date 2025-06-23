@@ -1,0 +1,2 @@
+N°	Nom	Service	Marque du PC	Modèle / Référence	Numéro de série	Mise en service	RAM (Go)	Stockage	Processeur	Windows	Compatible Windows 11 ?	Date de test
+1	admin	Gestion administrative/financière	Dell Inc.	OptiPlex 3040	2C5ZWD2	04/10/2022	8	223 Go	Intel(R) Core(TM) i3-6100T CPU @ 3.20GHz	10	NON (Non compatible : TPM 2.0, Secure Boot, Processeur compatible)	2025-05-28 11:11:29
