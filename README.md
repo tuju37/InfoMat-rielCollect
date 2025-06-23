@@ -3,7 +3,8 @@
 Un script Python interactif pour collecter, afficher et enregistrer les informations système essentielles d’un PC Windows. Idéal pour l’inventaire informatique, le diagnostic ou la préparation à la migration Windows 11.
 
 ---
-
+## Transférable sur clé USB
+---
 ## 📦 Fonctionnalités
 
 - Interface en ligne de commande claire et interactive
