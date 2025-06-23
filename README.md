@@ -53,7 +53,6 @@ Le fichier `rapport_pc.txt` sera créé automatiquement **lors de la première s
 | 8  | **RAM (Go)**                   | Quantité de mémoire vive installée (en Go)                                 |
 | 9  | **Stockage**                   | Capacité du disque principal                                               |
 | 10 | **Processeur**                 | Modèle du processeur (ex : Intel Core i5…)                                 |
-| 11 | **Windows**                    | Version et édition de Windows installée (ex : Windows 10 Pro 22H2)         |
-| 12 | **Compatible Windows 11 ?**    | Oui / Non + détails (ex : TPM, Secure Boot, CPU…)                          |
-| 13 | **Date de test**              | Date à laquelle l’analyse a été effectuée                                  |
+| 11 | **Compatible Windows 11 ?**    | Oui / Non + détails (ex : TPM, Secure Boot, CPU…)                          |
+| 12 | **Date de test**              | Date à laquelle l’analyse a été effectuée                                  |
 
